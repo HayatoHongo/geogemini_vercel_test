@@ -172,7 +172,6 @@ function confirmPin() {
       if (answerPin) {
         answerPin.setMap(null);
       }
-  
       answerPin = new google.maps.Marker({
         position: { lat: answerLocation.lat, lng: answerLocation.lng },
         map: map,
@@ -182,7 +181,7 @@ function confirmPin() {
         }
       });
   
-      // Display distance in popup
+      // Display the distance in a popup
       showDistancePopup(`${distance.toFixed(2)} km`);
       distanceCalculated = true; // Record that the distance has been calculated
     }
