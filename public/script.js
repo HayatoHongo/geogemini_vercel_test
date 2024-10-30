@@ -73,14 +73,22 @@ function setEventListeners() {
 
 async function searchLocation() {
     const address = document.getElementById('location-input').value;
+    console.log("Searching location for address:", address); // 入力された住所をログ出力
+
     try {
         const response = await fetch(`/api/myapi?address=${address}`);
-        const result = await response.json();
-        console.log(result); // APIから返されるデータを確認する
         
+        console.log("API response status:", response.status); // ステータスコードをログ出力
+        console.log("API response ok:", response.ok); // レスポンスが正常かどうか
+
+        const result = await response.json();
+        console.log("API response JSON:", result); // APIから返されたデータ全体を確認
+
         if (result.location) {
+            console.log("Location found:", result.location); // 緯度・経度情報をログ出力
             map.setCenter(result.location);
             if (searchMarker) searchMarker.setMap(null);
+
             const customIcon = {
                 url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
                 scaledSize: new google.maps.Size(32, 32)
@@ -91,10 +99,11 @@ async function searchLocation() {
                 icon: customIcon
             });
         } else {
+            console.warn("Location search failed:", result.error || "Location not found"); // エラー情報がない場合のデフォルトメッセージ
             alert(`Location search failed: ${result.error || "Location not found."}`);
         }
     } catch (error) {
-        console.error("An error occurred while searching for location:", error);
+        console.error("An error occurred while searching for location:", error); // エラー内容を詳細にログ出力
         alert('An error occurred while searching for location.');
     }
 }
