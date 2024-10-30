@@ -8,6 +8,21 @@ let totalDistance = 0;
 let searchMarker = null;
 let distanceCalculated = false;
 
+async function loadGoogleMapsAPI() {
+    try {
+        const response = await fetch('/api/myapi');
+        const data = await response.json();
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    } catch (error) {
+        console.error('Failed to load Google Maps API:', error);
+        alert('Google Maps APIの読み込みに失敗しました。');
+    }
+}
+
 function initMap() {
     const mapContainer = document.getElementById('map-container');
     map = new google.maps.Map(mapContainer, {
@@ -121,4 +136,4 @@ const quizLocations = {
     18: { lat: 6.522, lng: 3.33 }
 };
 
-window.onload = initMap;
+window.onload = loadGoogleMapsAPI;
