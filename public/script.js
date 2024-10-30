@@ -136,4 +136,5 @@ const quizLocations = {
     18: { lat: 6.522, lng: 3.33 }
 };
 
+// Google Maps APIを読み込む
 window.onload = loadGoogleMapsAPI;
