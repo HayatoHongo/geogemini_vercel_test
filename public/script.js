@@ -108,20 +108,6 @@ async function searchLocation() {
     }
 }
 
-function resetGame() {
-    document.getElementById('quiz-input').value = '';
-    currentQuizNumber = null;
-    document.getElementById('current-distance').textContent = '';
-    toggleButtons('reset');
-    clearPins();
-    distanceCalculated = false;
-    if (searchMarker) {
-        searchMarker.setMap(null);
-        searchMarker = null;
-    }
-    const popup = document.getElementById('distance-popup');
-    popup.style.display = 'none';
-}
 
 // 他の関数 (restartGame, confirmQuizNumber, confirmPin, showDistancePopup, calculateDistance, toggleButtons, clearPins, zoomOutEffect) は元のコードをそのまま使用します
 
