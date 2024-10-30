@@ -76,6 +76,8 @@ async function searchLocation() {
     try {
         const response = await fetch(`/api/myapi?address=${address}`);
         const result = await response.json();
+        console.log(result); // APIから返されるデータを確認する
+        
         if (result.location) {
             map.setCenter(result.location);
             if (searchMarker) searchMarker.setMap(null);
@@ -89,9 +91,10 @@ async function searchLocation() {
                 icon: customIcon
             });
         } else {
-            alert(`Location search failed: ${result.error}`);
+            alert(`Location search failed: ${result.error || "Location not found."}`);
         }
     } catch (error) {
+        console.error("An error occurred while searching for location:", error);
         alert('An error occurred while searching for location.');
     }
 }
