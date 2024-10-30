@@ -108,6 +108,20 @@ async function searchLocation() {
     }
 }
 
+function resetGame() {
+    document.getElementById('quiz-input').value = '';
+    currentQuizNumber = null;
+    document.getElementById('current-distance').textContent = '';
+    toggleButtons('reset');
+    clearPins();
+    distanceCalculated = false;
+    if (searchMarker) {
+        searchMarker.setMap(null);
+        searchMarker = null;
+    }
+    const popup = document.getElementById('distance-popup');
+    popup.style.display = 'none';
+}
 
 // 他の関数 (restartGame, confirmQuizNumber, confirmPin, showDistancePopup, calculateDistance, toggleButtons, clearPins, zoomOutEffect) は元のコードをそのまま使用します
 
@@ -148,30 +162,30 @@ function confirmQuizNumber() {
 }
 
 function confirmPin() {
-    if (userLocation && quizLocations[currentQuizNumber] && !distanceCalculated) {
-      const answerLocation = quizLocations[currentQuizNumber];
-      const distance = calculateDistance(userLocation.lat, userLocation.lng, answerLocation.lat, answerLocation.lng);
-  
-      totalDistance += distance;
-      document.getElementById('total-distance').textContent = `Total ${totalDistance.toFixed(2)} km`;
-  
-      if (answerPin) {
-        answerPin.setMap(null);
-      }
-      answerPin = new google.maps.Marker({
-        position: { lat: answerLocation.lat, lng: answerLocation.lng },
-        map: map,
-        icon: {
-          url: 'https://maps.google.com/mapfiles/kml/paddle/red-stars.png',
-          scaledSize: new google.maps.Size(32, 32)
-        }
-      });
-  
-      // Display the distance in a popup
-      showDistancePopup(`${distance.toFixed(2)} km`);
-      distanceCalculated = true; // Record that the distance has been calculated
+  if (userLocation && quizLocations[currentQuizNumber] && !distanceCalculated) {
+    const answerLocation = quizLocations[currentQuizNumber];
+    const distance = calculateDistance(userLocation.lat, userLocation.lng, answerLocation.lat, answerLocation.lng);
+
+    totalDistance += distance;
+    document.getElementById('total-distance').textContent = `Total ${totalDistance.toFixed(2)} km`;
+
+    if (answerPin) {
+      answerPin.setMap(null);
     }
-  }  
+    answerPin = new google.maps.Marker({
+      position: { lat: answerLocation.lat, lng: answerLocation.lng },
+      map: map,
+      icon: {
+        url: 'https://maps.google.com/mapfiles/kml/paddle/red-stars.png',
+        scaledSize: new google.maps.Size(32, 32)
+      }
+    });
+
+    // 距離をポップアップに表示
+    showDistancePopup(`${distance.toFixed(2)} km`);
+    distanceCalculated = true; // 距離が計算されたことを記録する
+  }
+}
 
 function showDistancePopup(distanceText) {
   const popup = document.getElementById('distance-popup');
