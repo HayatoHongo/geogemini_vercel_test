@@ -114,7 +114,6 @@ async function searchLocation() {
 function resetGame() {
     document.getElementById('quiz-input').value = '';
     currentQuizNumber = null;
-    document.getElementById('current-distance').textContent = '';
     toggleButtons('reset');
     clearPins();
     distanceCalculated = false; // リセット時にフラグをリセット
