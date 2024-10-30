@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>World Map Quiz</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>L-sports003    GeoGemini</h1>
+  <div id="search-container-wrapper">
+    <div id="location-search-container">
+      <input id="location-input" type="text" placeholder="地名を検索">
+      <button id="search-button">検索</button>
+    </div>
+  </div>
+  <div id="map-container"></div>
+  <div id="quiz-container">
+    <input type="text" id="quiz-input" placeholder="クイズ番号">
+    <button id="ok-button" class="active">番号を確定</button>
+    <button id="reset-button">次のクイズ</button>
+  </div>
+  <button id="confirm-pin-button" class="inactive" disabled>Final Answer</button>
+  <div id="distance-container">
+    <p><span id="current-distance"></span></p>
+    <p><span id="total-distance">Total 0 km</span></p>
+  </div>
+  <button id="restart-button" class="restart">Restart Game</button>
+
+  <!-- ポップアップ表示用の要素 -->
+  <div id="distance-popup" style="display: none;">
+    <span id="popup-text"></span>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
