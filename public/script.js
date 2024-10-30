@@ -169,9 +169,12 @@ function confirmPin() {
       totalDistance += distance;
       document.getElementById('total-distance').textContent = `Total ${totalDistance.toFixed(2)} km`;
   
-      if (answerPin) answerPin.setMap(null);
+      if (answerPin) {
+        answerPin.setMap(null);
+      }
+  
       answerPin = new google.maps.Marker({
-        position: answerLocation,
+        position: { lat: answerLocation.lat, lng: answerLocation.lng },
         map: map,
         icon: {
           url: 'https://maps.google.com/mapfiles/kml/paddle/red-stars.png',
@@ -179,11 +182,11 @@ function confirmPin() {
         }
       });
   
+      // Display distance in popup
       showDistancePopup(`${distance.toFixed(2)} km`);
-      distanceCalculated = true;
+      distanceCalculated = true; // Record that the distance has been calculated
     }
-  }
-  
+  }  
 
 function showDistancePopup(distanceText) {
   const popup = document.getElementById('distance-popup');
