@@ -13,7 +13,7 @@ async function loadGoogleMapsAPI() {
         const response = await fetch('/api/myapi');
         const data = await response.json();
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&callback=initMap`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&callback=onMapsApiLoaded`;
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
@@ -23,6 +23,11 @@ async function loadGoogleMapsAPI() {
     }
 }
 
+function onMapsApiLoaded() {
+    initMap();
+    setEventListeners();
+}
+
 function initMap() {
     const mapContainer = document.getElementById('map-container');
     map = new google.maps.Map(mapContainer, {
@@ -30,23 +35,22 @@ function initMap() {
         zoom: 2,
         mapTypeId: 'satellite'
     });
-
     geocoder = new google.maps.Geocoder();
+}
 
+function setEventListeners() {
     google.maps.event.addListener(map, 'click', (event) => {
         const latitude = event.latLng.lat();
         const longitude = event.latLng.lng();
-
         if (userPin) userPin.setMap(null);
-
         userPin = new google.maps.Marker({
             position: { lat: latitude, lng: longitude },
             map: map
         });
-
         userLocation = { lat: latitude, lng: longitude };
     });
 
+    document.getElementById('search-button').addEventListener('click', searchLocation);
     document.getElementById('reset-button').addEventListener('click', resetGame);
     document.getElementById('restart-button').addEventListener('click', restartGame);
     document.getElementById('ok-button').addEventListener('click', confirmQuizNumber);
@@ -54,9 +58,7 @@ function initMap() {
         confirmPin();
         zoomOutEffect();
     });
-    document.getElementById('search-button').addEventListener('click', searchLocation);
 
-    toggleButtons('init');
     const locationInput = document.getElementById('location-input');
     locationInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter') searchLocation();
@@ -65,6 +67,8 @@ function initMap() {
     document.getElementById('quiz-input').addEventListener('keyup', (event) => {
         if (event.key === 'Enter') confirmQuizNumber();
     });
+
+    toggleButtons('init');
 }
 
 async function searchLocation() {
@@ -72,17 +76,13 @@ async function searchLocation() {
     try {
         const response = await fetch(`/api/myapi?address=${address}`);
         const result = await response.json();
-
         if (result.location) {
             map.setCenter(result.location);
-
             if (searchMarker) searchMarker.setMap(null);
-
             const customIcon = {
                 url: 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
                 scaledSize: new google.maps.Size(32, 32)
             };
-
             searchMarker = new google.maps.Marker({
                 map: map,
                 position: result.location,
@@ -103,12 +103,10 @@ function resetGame() {
     toggleButtons('reset');
     clearPins();
     distanceCalculated = false;
-
     if (searchMarker) {
         searchMarker.setMap(null);
         searchMarker = null;
     }
-
     const popup = document.getElementById('distance-popup');
     popup.style.display = 'none';
 }
