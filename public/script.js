@@ -13,7 +13,7 @@ async function loadGoogleMapsAPI() {
         const response = await fetch('/api/myapi');
         const data = await response.json();
         const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&callback=onMapsApiLoaded`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${data.apiKey}&libraries=geometry&callback=onMapsApiLoaded`;
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
@@ -188,12 +188,17 @@ function showDistancePopup(distanceText) {
 }
 
 function calculateDistance(userLat, userLng, answerLat, answerLng) {
-  const distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(
-    new google.maps.LatLng(userLat, userLng),
-    new google.maps.LatLng(answerLat, answerLng)
-  );
-
-  return distanceInMeters / 1000;
+    if (google && google.maps && google.maps.geometry && google.maps.geometry.spherical) {
+        const distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(
+            new google.maps.LatLng(userLat, userLng),
+            new google.maps.LatLng(answerLat, answerLng)
+        );
+        return distanceInMeters / 1000; // 距離をキロメートルで返す
+    } else {
+        console.error("Geometry ライブラリが利用できません。");
+        alert("距離の計算に失敗しました。Geometry ライブラリが読み込まれていません。");
+        return 0; // エラーを回避するためのデフォルト値
+    }
 }
 
 function toggleButtons(action) {
