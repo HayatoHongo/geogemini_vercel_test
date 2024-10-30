@@ -113,6 +113,157 @@ function resetGame() {
 
 // 他の関数 (restartGame, confirmQuizNumber, confirmPin, showDistancePopup, calculateDistance, toggleButtons, clearPins, zoomOutEffect) は元のコードをそのまま使用します
 
+function resetGame() {
+    document.getElementById('quiz-input').value = '';
+    currentQuizNumber = null;
+    document.getElementById('current-distance').textContent = '';
+    toggleButtons('reset');
+    clearPins();
+    distanceCalculated = false; // リセット時にフラグをリセット
+  
+    // 検索マーカーが存在する場合は削除
+    if (searchMarker) {
+      searchMarker.setMap(null);
+      searchMarker = null; // マーカー変数をリセット
+    }
+  
+    // ポップアップを消す
+    const popup = document.getElementById('distance-popup');
+    popup.style.display = 'none';
+}
+  
+
+function restartGame() {
+  resetGame();
+  totalDistance = 0;
+  document.getElementById('total-distance').textContent = `Total ${totalDistance.toFixed(2)} km`;
+}
+
+function confirmQuizNumber() {
+  currentQuizNumber = document.getElementById('quiz-input').value;
+  if (quizLocations[currentQuizNumber]) {
+    toggleButtons('confirmQuiz');
+    distanceCalculated = false; // 新しいクイズ番号が確定したときにフラグをリセット
+  } else {
+    alert('Invalid quiz number. Please enter a valid number.');
+  }
+}
+
+function confirmPin() {
+  if (userLocation && quizLocations[currentQuizNumber] && !distanceCalculated) {
+    const answerLocation = quizLocations[currentQuizNumber];
+    const distance = calculateDistance(userLocation.lat, userLocation.lng, answerLocation.lat, answerLocation.lng);
+
+    totalDistance += distance;
+    document.getElementById('total-distance').textContent = `Total ${totalDistance.toFixed(2)} km`;
+
+    if (answerPin) {
+      answerPin.setMap(null);
+    }
+    answerPin = new google.maps.Marker({
+      position: { lat: answerLocation.lat, lng: answerLocation.lng },
+      map: map,
+      icon: {
+        url: 'https://maps.google.com/mapfiles/kml/paddle/red-stars.png',
+        scaledSize: new google.maps.Size(32, 32)
+      }
+    });
+
+    // 距離をポップアップに表示
+    showDistancePopup(`${distance.toFixed(2)} km`);
+    distanceCalculated = true; // 距離が計算されたことを記録する
+  }
+}
+
+function showDistancePopup(distanceText) {
+  const popup = document.getElementById('distance-popup');
+  const popupText = document.getElementById('popup-text');
+  popupText.textContent = distanceText;
+  popup.style.display = 'block';
+
+  // 5秒後にポップアップを消す
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 5000);
+}
+
+function calculateDistance(userLat, userLng, answerLat, answerLng) {
+  const distanceInMeters = google.maps.geometry.spherical.computeDistanceBetween(
+    new google.maps.LatLng(userLat, userLng),
+    new google.maps.LatLng(answerLat, answerLng)
+  );
+
+  return distanceInMeters / 1000;
+}
+
+function toggleButtons(action) {
+  const okButton = document.getElementById('ok-button');
+  const resetButton = document.getElementById('reset-button');
+  const confirmPinButton = document.getElementById('confirm-pin-button');
+
+  if (action === 'init') {
+    okButton.classList.add('active');
+    okButton.classList.remove('inactive');
+    okButton.disabled = false;
+
+    resetButton.classList.add('inactive');
+    resetButton.classList.remove('active');
+    resetButton.disabled = true;
+
+    confirmPinButton.classList.add('inactive');
+    confirmPinButton.classList.remove('active');
+    confirmPinButton.disabled = true;
+  } else if (action === 'reset' || action === 'restart') {
+    okButton.classList.add('active');
+    okButton.classList.remove('inactive');
+    okButton.disabled = false;
+
+    resetButton.classList.add('inactive');
+    resetButton.classList.remove('active');
+    resetButton.disabled = true;
+
+    confirmPinButton.classList.add('inactive');
+    confirmPinButton.classList.remove('active');
+    confirmPinButton.disabled = true;
+  } else if (action === 'confirmQuiz') {
+    okButton.classList.add('inactive');
+    okButton.classList.remove('active');
+    okButton.disabled = true;
+
+    resetButton.classList.add('active');
+    resetButton.classList.remove('inactive');
+    resetButton.disabled = false;
+
+    confirmPinButton.classList.add('active');
+    confirmPinButton.classList.remove('inactive');
+    confirmPinButton.disabled = false;
+  }
+}
+
+function clearPins() {
+  if (userPin) {
+    userPin.setMap(null);
+    userPin = null;
+  }
+  if (answerPin) {
+    answerPin.setMap(null);
+    answerPin = null;
+  }
+}
+
+function zoomOutEffect() {
+    let zoomLevel = map.getZoom();
+    const zoomOutInterval = setInterval(() => {
+        if (zoomLevel > 2) {
+            zoomLevel--;
+            map.setZoom(zoomLevel);
+        } else {
+            clearInterval(zoomOutInterval);
+            map.setCenter({ lat: 0, lng: 0 });
+        }
+    }, 200); // 200ミリ秒ごとにズームアウト
+}
+
 const quizLocations = {
     1: { lat: 37.7749, lng: -122.419 },
     2: { lat: 34.0522, lng: -118.244 },
